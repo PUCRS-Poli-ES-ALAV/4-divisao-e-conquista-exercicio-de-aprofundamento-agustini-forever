@@ -27,7 +27,7 @@ public class App
 
             for (int i = 0; i < x; i++) {
                 array[i] = random.nextInt(100);
-            
+            }
             return array;
         }
 
