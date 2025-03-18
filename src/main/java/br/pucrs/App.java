@@ -1,5 +1,7 @@
 package br.pucrs;
 
+import java.util.Random;
+
 /**
  * Hello world!
  *
@@ -19,13 +21,15 @@ public class App
 
     }
 
-    int[] populate(int x){
-        int[] array = [];
+    public static int[] populateArrayWithRandomNumbers(int x) {
+            int[] array = new int[x]; 
+            Random random = new Random();
 
-        for(int i = 0; i < x; i++){
-            array[i] = (int) Math.random(1, 10000);
+            for (int i = 0; i < x; i++) {
+                array[i] = random.nextInt(100);
+            
+            return array;
         }
-    }
 
     long maxVal1(long A[], int n) {  
         long max = A[0];
