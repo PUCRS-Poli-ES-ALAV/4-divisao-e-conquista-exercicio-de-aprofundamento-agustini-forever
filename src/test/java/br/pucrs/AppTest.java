@@ -1,10 +1,10 @@
 package br.pucrs;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for simple App.
@@ -71,20 +71,21 @@ public class AppTest
         for (int size : sizes) {
             long randomArray[] = new long[size];
             Random random = new Random();
-
+    
             for (int i = 0; i < size; i++) {
                 randomArray[i] = random.nextInt(100);
             }
-
+    
             App.resetIterationCount(); // Reset iteration count before finding max
             long startTime = System.nanoTime();
-            long maxVal = App.maxVal2(randomArray, 0, size);
+            // Change 'size' to 'size - 1' to use the correct 0-based indexing
+            long maxVal = App.maxVal2(randomArray, 0, size - 1);
             long endTime = System.nanoTime();
-
+    
             // Verify the max value is correct
             long expectedMax = java.util.Arrays.stream(randomArray).max().orElseThrow();
             assertTrue(maxVal == expectedMax);
-
+    
             System.out.println("Size: " + size);
             System.out.println("Max Value: " + maxVal);
             System.out.println("Time taken (ns): " + (endTime - startTime));
@@ -109,7 +110,7 @@ public class AppTest
             long endTime = System.nanoTime();
 
             BigInteger expected = x.multiply(y);
-            assertTrue(result == expected);
+            assertTrue(result.equals(expected));
 
             System.out.println("X: " + x + ", Y: " + y);
             System.out.println("Result: " + result);
