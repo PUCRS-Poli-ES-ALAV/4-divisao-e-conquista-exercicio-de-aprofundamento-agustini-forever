@@ -1,7 +1,6 @@
 package br.pucrs;
 
 import java.util.List;
-import java.math.BigInteger;
 
 public class App 
 {
@@ -18,6 +17,13 @@ public class App
     public static void main( String[] args )
     {
         System.out.println( "testing methods..." );
+
+        System.out.println(((long) Math.pow(2, 31) - 1) * ((long) Math.pow(2, 31) - 1));
+        System.out.println(multiply4(
+            (long) Math.pow(2, 31) - 1,
+            (long) Math.pow(2, 31) - 1,
+            31L));
+        System.out.println(getIterationCount());
     }
 
     public static List<Integer> merge(List<Integer> left, List<Integer> right) {
@@ -77,28 +83,51 @@ public class App
         }
     }
 
-    public static BigInteger multiply(BigInteger x, BigInteger y) {
-        int n = Math.max(x.bitLength(), y.bitLength()); // Calculate the bit-length of the larger number
-        return multiplyRecursive(x, y, BigInteger.valueOf(n));
+    public static long multiply(long x, long y) {
+        int n = Math.max(Long.toBinaryString(x).length(), Long.toBinaryString(y).length());
+        return multiplyRecursive(x, y, n);
     }
-    
-    private static BigInteger multiplyRecursive(BigInteger x, BigInteger y, BigInteger n) {
-        if (n.compareTo(BigInteger.ONE) <= 0) {
-            return x.multiply(y);
+
+    private static long multiplyRecursive(long x, long y, int n) {
+        if (n <= 1) {
+            return x * y;
         } else {
-            BigInteger m = n.divide(BigInteger.TWO); // Use integer division for simplicity
-            BigInteger a = x.shiftRight(m.intValue()); // Higher half of x
-            BigInteger b = x.and(BigInteger.ONE.shiftLeft(m.intValue()).subtract(BigInteger.ONE)); // Lower half of x
-            BigInteger c = y.shiftRight(m.intValue()); // Higher half of y
-            BigInteger d = y.and(BigInteger.ONE.shiftLeft(m.intValue()).subtract(BigInteger.ONE)); // Lower half of y
-    
-            BigInteger e = multiplyRecursive(a, c, m); // High part of the result
-            BigInteger f = multiplyRecursive(b, d, m); // Low part of the result
-            BigInteger g = multiplyRecursive(a, d, m); // Cross terms
-            BigInteger h = multiplyRecursive(b, c, m); // Cross terms
-    
-            // Combine the results
-            return (e.shiftLeft(2 * m.intValue())).add((g.add(h)).shiftLeft(m.intValue())).add(f);
+            int m = n / 2;
+            long mask = (1L << m) - 1;
+
+            long a = x >>> m;  // Higher half of x
+            long b = x & mask;  // Lower half of x
+            long c = y >>> m;  // Higher half of y
+            long d = y & mask;  // Lower half of y
+
+            long e = multiplyRecursive(a, c, m); // High part
+            long f = multiplyRecursive(b, d, m); // Low part
+            long g = multiplyRecursive(a, d, m); // Cross terms
+            long h = multiplyRecursive(b, c, m); // Cross terms
+
+            // Combine results
+            return (e << (2 * m)) + ((g + h) << m) + f;
+        }
+    }
+
+    public static long multiply4(long x, long y, long n){
+        if (n == 1) return x * y;
+
+        else{
+            iterationCount++;
+
+            long m = n/2;
+            long a = x/(long) (Math.pow(2, m));
+            long b = x % (long) (Math.pow(2, m));
+            long c = y/(long) (Math.pow(2, m));
+            long d = y % (long) (Math.pow(2, m));
+
+            long e = multiply4(a, c, m);
+            long f = multiply4(b, d, m);
+            long g = multiply4(b, c, m);
+            long h = multiply4(a, d, m);
+
+            return (long) (Math.pow(2, 2 * m) * e) + ((long) Math.pow(2,m) * (g + h) + f );
         }
     }
 }
