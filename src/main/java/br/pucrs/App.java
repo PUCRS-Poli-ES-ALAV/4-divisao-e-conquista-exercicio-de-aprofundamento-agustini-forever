@@ -1,7 +1,7 @@
 package br.pucrs;
 
-import java.util.List;
 import java.math.BigInteger;
+import java.util.List;
 
 public class App 
 {
@@ -67,38 +67,45 @@ public class App
     }
 
     public static long maxVal2(long A[], int init, int end) {  
-        if (end - init <= 1) {
-            return Math.max(A[init], A[end - 1]);  
+        if (init == end) {
+            return A[init];  
+        } else if (end - init == 1) {
+            return Math.max(A[init], A[end]);
         } else {
             int m = (init + end)/2;
             long v1 = maxVal2(A, init, m);   
-            long v2 = maxVal2(A, m+1, end);  
+            long v2 = maxVal2(A, m, end);  
             return Math.max(v1, v2);
         }
     }
 
     public static BigInteger multiply(BigInteger x, BigInteger y) {
-        int n = Math.max(x.bitLength(), y.bitLength()); // Calculate the bit-length of the larger number
-        return multiplyRecursive(x, y, BigInteger.valueOf(n));
-    }
-    
-    private static BigInteger multiplyRecursive(BigInteger x, BigInteger y, BigInteger n) {
-        if (n.compareTo(BigInteger.ONE) <= 0) {
+        // Determine bit length (n)
+        int n = Math.max(x.bitLength(), y.bitLength());
+        if (n <= 1) {
             return x.multiply(y);
-        } else {
-            BigInteger m = n.divide(BigInteger.TWO); // Use integer division for simplicity
-            BigInteger a = x.shiftRight(m.intValue()); // Higher half of x
-            BigInteger b = x.and(BigInteger.ONE.shiftLeft(m.intValue()).subtract(BigInteger.ONE)); // Lower half of x
-            BigInteger c = y.shiftRight(m.intValue()); // Higher half of y
-            BigInteger d = y.and(BigInteger.ONE.shiftLeft(m.intValue()).subtract(BigInteger.ONE)); // Lower half of y
-    
-            BigInteger e = multiplyRecursive(a, c, m); // High part of the result
-            BigInteger f = multiplyRecursive(b, d, m); // Low part of the result
-            BigInteger g = multiplyRecursive(a, d, m); // Cross terms
-            BigInteger h = multiplyRecursive(b, c, m); // Cross terms
-    
-            // Combine the results
-            return (e.shiftLeft(2 * m.intValue())).add((g.add(h)).shiftLeft(m.intValue())).add(f);
         }
+        
+        // Calculate m = ceiling of n/2
+        int m = (n + 1) / 2;
+        
+        // Divide numbers
+        BigInteger mask = BigInteger.ONE.shiftLeft(m).subtract(BigInteger.ONE);
+        BigInteger a = x.shiftRight(m);
+        BigInteger b = x.and(mask);
+        BigInteger c = y.shiftRight(m);
+        BigInteger d = y.and(mask);
+        
+        // Recursive multiplication
+        BigInteger e = multiply(a, c);
+        BigInteger f = multiply(b, d);
+        BigInteger g = multiply(b, c);
+        BigInteger h = multiply(a, d);
+        
+        // Combine results
+        BigInteger result = e.shiftLeft(2 * m)
+                            .add((g.add(h)).shiftLeft(m))
+                            .add(f);
+        return result;
     }
 }
